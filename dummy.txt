@@ -1,1 +1,1 @@
-Testing GitPython functionality.
+Testing GitPython functionality by creating dummy repo.
