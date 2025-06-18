@@ -4,11 +4,11 @@ import shutil
 from git import Repo, GitCommandError
 from dotenv import load_dotenv
 
-# Load .env and GitHub token
+# Load GitHub token from .env
 load_dotenv()
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 if not GITHUB_TOKEN:
-    raise ValueError(" GITHUB_TOKEN not found in .env file")
+    raise ValueError(" GITHUB_TOKEN not found in .env file.")
 
 # Config
 REPO_DIR = "dummy_git_repo"
@@ -21,7 +21,7 @@ GITHUB_REPO_URL = f"https://{GITHUB_USERNAME}:{GITHUB_TOKEN}@github.com/{GITHUB_
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 try:
-    # Create or load repo
+    # Initialize or load Git repo
     if not os.path.exists(REPO_DIR):
         os.makedirs(REPO_DIR)
         repo = Repo.init(REPO_DIR)
@@ -30,7 +30,6 @@ try:
         repo = Repo(REPO_DIR)
         logging.info(" Loaded existing Git repo.")
 
-    # Change into repo directory
     os.chdir(REPO_DIR)
 
     # Create and checkout branch
@@ -46,33 +45,43 @@ try:
         f.write("This is a test file created on a feature branch using GitPython.\n")
     logging.info(f" Created file: {dummy_file}")
 
-    #  Copy this script into repo (only once)
+    # Copy this script into the repo if not already
     script_name = "git_python_test.py"
-    script_source = os.path.join("..", script_name)
-    if os.path.exists(script_source):
-        shutil.copy(script_source, script_name)
-        logging.info(f" Copied {script_name} into the Git repo.")
+    script_src = os.path.join("..", script_name)
+    if os.path.exists(script_src):
+        shutil.copy(script_src, script_name)
+        logging.info(f" Copied {script_name} into Git repo.")
 
-    # Stage and commit both files
-    repo.index.add([dummy_file, script_name])
-    repo.index.commit("Add dummy file and git_python_test.py to repo")
-    logging.info(" Committed script and data file.")
+    # Copy README.md into the repo if exists
+    readme_src = os.path.join("..", "README.md")
+    if os.path.exists(readme_src):
+        shutil.copy(readme_src, "README.md")
+        logging.info(" Copied README.md into Git repo.")
 
-    # Print commits
-    logging.info(" Commit History:")
+    # Stage files
+    files_to_add = [dummy_file, script_name]
+    if os.path.exists("README.md"):
+        files_to_add.append("README.md")
+
+    repo.index.add(files_to_add)
+    repo.index.commit("Add dummy file, script, and README.md")
+    logging.info(" Committed all files.")
+
+    # Show log
     for commit in repo.iter_commits():
         logging.info(f"{commit.hexsha[:7]} - {commit.author.name}: {commit.message.strip()}")
 
-    # Add remote if not added
+    # Add remote if not already
     if "origin" not in [remote.name for remote in repo.remotes]:
         repo.create_remote("origin", url=GITHUB_REPO_URL)
         logging.info(" Added GitHub remote.")
 
-    # Push
+    # Push branch
     repo.remote("origin").push(refspec=f"{BRANCH_NAME}:{BRANCH_NAME}")
-    logging.info(" Pushed branch and script to GitHub.")
+    logging.info(f" Successfully pushed '{BRANCH_NAME}' to GitHub.")
 
 except GitCommandError as git_err:
     logging.error(f" Git error: {git_err}")
 except Exception as e:
     logging.error(f" Unexpected error: {e}")
+
