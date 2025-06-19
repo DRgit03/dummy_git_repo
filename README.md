@@ -110,15 +110,5 @@ Example logs:
 
 ---
 
-## Author
 
-Developed by **Ramu Munnangi**
-Project: Git Automation using Python for workflow validation and DevOps scripting experiments.
 
----
-
-## License
-
-This repository is intended for educational and automation scripting purposes. Feel free to fork and build upon it!
-
-```
