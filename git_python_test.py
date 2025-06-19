@@ -63,6 +63,7 @@ try:
         logging.info("Copied README.md into Git repo.")
         files_to_add.append("README.md")
 
+
     # Stage and commit all added files
     repo.index.add(files_to_add)
     repo.index.commit("Add dummy file, script, and README.md")
