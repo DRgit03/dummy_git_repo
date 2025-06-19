@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 if not GITHUB_TOKEN:
-    raise ValueError(" GITHUB_TOKEN not found in .env file.")
+    raise ValueError("GITHUB_TOKEN not found in .env file.")
 
 # Configuration
 REPO_DIR = "dummy_git_repo"
@@ -56,17 +56,9 @@ try:
         logging.info(f"Copied {script_name} into Git repo.")
         files_to_add.append(script_name)
 
-    # Copy README.md if it exists in parent directory
-    readme_src_path = os.path.join("..", "README.md")
-    if os.path.exists(readme_src_path):
-        shutil.copy(readme_src_path, "README.md")
-        logging.info("Copied README.md into Git repo.")
-        files_to_add.append("README.md")
-
-
     # Stage and commit all added files
     repo.index.add(files_to_add)
-    repo.index.commit("Add dummy file, script, and README.md")
+    repo.index.commit("Add dummy file and script to repo")
     logging.info("Committed all files.")
 
     # Show commit log
